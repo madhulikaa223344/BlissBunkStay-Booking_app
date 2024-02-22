@@ -1,4 +1,4 @@
-import { HotelFormData } from './forms/ManageHotelForm/ManageHotelForm';
+
 import { HotelType } from "../../backend/src/shared/types";
 import { RegisterFormData } from "./pages/Register";
 import { SignInFormData } from "./pages/SignIn";
@@ -96,11 +96,11 @@ export const fetchMyHotelById= async (hotelId:string):Promise<HotelType>=>{
 }
 
 
-export const updateMyHotelById= async (HotelFormData:FormData)=>{
-  const response = await fetch(`${API_BASE_URL}/api/my-hotels/${HotelFormData.get("hotelId")}`,
+export const updateMyHotelById= async (hotelFormData:FormData)=>{
+  const response = await fetch(`${API_BASE_URL}/api/my-hotels/${hotelFormData.get("hotelId")}`,
   {
     method:'PUT',
-    body: HotelFormData,
+    body: hotelFormData,
     credentials: 'include',
 
   }
