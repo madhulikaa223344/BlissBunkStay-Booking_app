@@ -67,9 +67,9 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
 });
 
 router.get("/:id", verifyToken, async (req: Request, res: Response) => {
-  const id = req.params.id.toString();
+  const id = req.params.id.toString(); 
   try {
-    const hotel = await Hotel.findOne({
+    const hotel = await Hotel.findOne({ // if use find then it will return an array which will not work
       _id: id,
       userId: req.userId,
     });

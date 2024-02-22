@@ -12,7 +12,7 @@ const ImagesSection = () => {
   const existingImageUrls = watch("imageUrls");
 
   const handleDelete = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,// way to handle click in react
     imageUrl: string
   ) => {
     event.preventDefault();
@@ -28,8 +28,8 @@ const ImagesSection = () => {
       <div className="border rounded p-4 flex flex-col gap-4">
         {existingImageUrls && (
           <div className="grid grid-cols-6 gap-4">
-            {existingImageUrls.map((url) => (
-              <div className="relative group">
+            {existingImageUrls.map((url ) => (
+              <div className="relative group" key={url}>
                 <img src={url} className="min-h-full object-cover" />
                 <button
                   onClick={(event) => handleDelete(event, url)}
