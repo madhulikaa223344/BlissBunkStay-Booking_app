@@ -9,6 +9,7 @@ import path from "path";
 import {v2 as cloudinary} from "cloudinary"
 import myHotelsRoutes from "./routes/my-hotels"
 import hotelRoutes from "./routes/hotels";
+import bookingRoutes from "./routes/my-bookings"
 
 
 cloudinary.config({
@@ -35,6 +36,7 @@ app.use("/api/auth",authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/my-hotels",myHotelsRoutes);
 app.use("/api/hotels",hotelRoutes);
+app.use("/api/my-bookings",bookingRoutes);
 
 
 
