@@ -27,6 +27,9 @@ export type BookingFormData = {
   hotelId: string;
   paymentIntentId: string;
   totalCost: number;
+  description:string;
+  name: string;
+  address:string;
 };
 
 const BookingForm = ({ currentUser, paymentIntent }: Props) => {
@@ -62,25 +65,77 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
       hotelId: hotelId,
       totalCost: paymentIntent.totalCost,
       paymentIntentId: paymentIntent.paymentIntentId,
+      description:"Anything",
+      name: currentUser.firstName,
+      address:"anyting",
     },
   });
 
+  // const onSubmit = async (formData: BookingFormData) => {
+  //   if (!stripe || !elements) {
+  //     return;
+  //   }
+
+
+  //   const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
+  //     payment_method: {
+  //       card: elements.getElement(CardElement) as StripeCardElement,
+  //       // name: 'Jenny Rosen',
+  //       // email: 'jennyrosen@example.com',
+  //     },
+  //   });
+  //   console.log(result)
+  //   if (result.paymentIntent?.status === "succeeded") {
+  //     bookRoom({ ...formData, paymentIntentId: result.paymentIntent.id });
+  //   }
+  // };
   const onSubmit = async (formData: BookingFormData) => {
     if (!stripe || !elements) {
+      console.log("Stripe or elements not loaded");
       return;
     }
-    console.log("asdasd",elements.getElement(CardElement))
-
-    const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
-      payment_method: {
-        card: elements.getElement(CardElement) as StripeCardElement,
-        // name: 'Jenny Rosen',
-        // email: 'jennyrosen@example.com',
+  
+    const cardElement = elements.getElement(CardElement);
+  
+    if (!cardElement) {
+      console.log("CardElement not found");
+      return;
+    }
+  
+    // console.log("Form Data:", formData);
+  
+    const billingDetails = {
+      name: formData.name,
+      email: formData.email,
+      address: {
+        line1: formData.address,
+        city: "New York", 
+        country: "US",
+        postal_code: "0114",
       },
-    });
-    console.log(result)
-    if (result.paymentIntent?.status === "succeeded") {
-      bookRoom({ ...formData, paymentIntentId: result.paymentIntent.id });
+    };
+  
+    const paymentMethod = {
+      card: cardElement as StripeCardElement,
+      billing_details: billingDetails,
+    };
+  
+    const confirmCardPaymentData = {
+      payment_method: paymentMethod,
+    };
+  
+    const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, confirmCardPaymentData);
+  
+    // console.log("Stripe Result:", result);
+  
+    if (result.error) {
+      // Handle error in payment
+      console.log("Payment failed:", result.error.message);
+      showToast({message: `Payment failed: ${result.error.message}`, type: "ERROR" });
+    } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+      // Payment succeeded, proceed with booking
+      bookRoom({...formData,paymentIntentId: result.paymentIntent.id,});
+      showToast({ message: "Booking Successful!", type: "SUCCESS" });
     }
   };
 

@@ -96,7 +96,7 @@ router.post(
       },
       description: "jasdlsjdfhjdsfhsjdhflsd"
     });
-    console.log("HERer asdasd")
+    // console.log("HERer asdasd")
     if (!paymentIntent.client_secret) {
       return res.status(500).json({ message: "Error creating payment intent" });
     }
@@ -106,19 +106,21 @@ router.post(
       clientSecret: paymentIntent.client_secret.toString(),
       totalCost,
     };
-    console.log("REs", response);
+    // console.log("REs", response);
     res.send(response);
   }
 );
 
 router.post("/:hotelId/bookings",verifyToken,async(req:Request, res:Response)=>{
   try {
+
     const paymentIntentId = req.body.paymentIntentId;
+    // console.log(paymentIntentId ,"payment");
     const paymentIntend= await stripe.paymentIntents.retrieve(paymentIntentId as string);
     if(!paymentIntend){
       return res.status(400).json({message: "payment intend not found"});
     }
-    console.log(paymentIntend)
+   
     if(paymentIntend.metadata.hotelId!==req.params.hotelId || paymentIntend.metadata.userId!==req.userId){
 return res.status(400).json({message:"Payment intent mismatch"});
     }
@@ -130,13 +132,15 @@ return res.status(400).json({message:"Payment intent mismatch"});
       ...req.body,
       userId:req.userId,
     }
+    console.log(newBooking);
     const hotel=await Hotel.findOneAndUpdate({_id:req.params.hotelId},
       {
-        $push:{booking:newBooking},
+        $push:{bookings:newBooking},
       });
       if(!hotel){
         return res.status(404).json({message:"hotel not found"});
       }
+      console.log(hotel , "dfghj");
       await hotel.save();
       res.status(200).send();
 
